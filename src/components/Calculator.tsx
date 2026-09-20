@@ -15,10 +15,14 @@ const Calculator = () => {
   const [operator, setOperator] = useState<Operator>(null);
   const [waitingForOperand, setWaitingForOperand] = useState(false);
   const [expression, setExpression] = useState("");
+
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [displayAnimating, setDisplayAnimating] = useState(false);
 
+  // -----------------------------
+  // Display animation
+  // -----------------------------
   const animateDisplay = () => {
     setDisplayAnimating(false);
 
@@ -32,6 +36,9 @@ const Calculator = () => {
     animateDisplay();
   };
 
+  // -----------------------------
+  // Clear calculator
+  // -----------------------------
   const clearCalculator = () => {
     updateDisplay("0");
     setPreviousValue(null);
@@ -40,6 +47,9 @@ const Calculator = () => {
     setExpression("");
   };
 
+  // -----------------------------
+  // Number input
+  // -----------------------------
   const inputNumber = (number: string) => {
     if (display === "Error") {
       updateDisplay(number);
@@ -63,6 +73,9 @@ const Calculator = () => {
     }
   };
 
+  // -----------------------------
+  // Decimal
+  // -----------------------------
   const inputDecimal = () => {
     if (display === "Error") {
       clearCalculator();
@@ -81,6 +94,9 @@ const Calculator = () => {
     }
   };
 
+  // -----------------------------
+  // Calculation logic
+  // -----------------------------
   const calculate = (
     firstValue: number,
     secondValue: number,
@@ -108,6 +124,9 @@ const Calculator = () => {
     }
   };
 
+  // -----------------------------
+  // Format result
+  // -----------------------------
   const formatResult = (result: number): string => {
     if (!Number.isFinite(result)) {
       return "Error";
@@ -116,6 +135,9 @@ const Calculator = () => {
     return String(Number(result.toPrecision(12)));
   };
 
+  // -----------------------------
+  // Operator
+  // -----------------------------
   const chooseOperator = (nextOperator: Operator) => {
     if (display === "Error") {
       return;
@@ -146,18 +168,28 @@ const Calculator = () => {
 
       updateDisplay(formattedResult);
       setPreviousValue(result);
-      setExpression(`${formattedResult} ${nextOperator ?? ""}`);
+      setExpression(
+        `${formattedResult} ${nextOperator ?? ""}`
+      );
     } else {
       setPreviousValue(currentValue);
-      setExpression(`${display} ${nextOperator ?? ""}`);
+      setExpression(
+        `${display} ${nextOperator ?? ""}`
+      );
     }
 
     setOperator(nextOperator);
     setWaitingForOperand(true);
   };
 
+  // -----------------------------
+  // Equals
+  // -----------------------------
   const performCalculation = () => {
-    if (previousValue === null || operator === null) {
+    if (
+      previousValue === null ||
+      operator === null
+    ) {
       return;
     }
 
@@ -189,6 +221,7 @@ const Calculator = () => {
     const calculationExpression =
       `${previousValue} ${operatorSymbol} ${currentValue}`;
 
+    // Add calculation to history
     setHistory((currentHistory) => [
       {
         expression: calculationExpression,
@@ -204,6 +237,9 @@ const Calculator = () => {
     setExpression("");
   };
 
+  // -----------------------------
+  // Percentage
+  // -----------------------------
   const handlePercentage = () => {
     if (display === "Error") {
       return;
@@ -214,8 +250,14 @@ const Calculator = () => {
     updateDisplay(formatResult(result));
   };
 
+  // -----------------------------
+  // Positive / Negative
+  // -----------------------------
   const toggleSign = () => {
-    if (display === "Error" || display === "0") {
+    if (
+      display === "Error" ||
+      display === "0"
+    ) {
       return;
     }
 
@@ -226,6 +268,9 @@ const Calculator = () => {
     }
   };
 
+  // -----------------------------
+  // Backspace
+  // -----------------------------
   const deleteLastDigit = () => {
     if (display === "Error") {
       clearCalculator();
@@ -238,7 +283,10 @@ const Calculator = () => {
 
     if (
       display.length === 1 ||
-      (display.length === 2 && display.startsWith("-"))
+      (
+        display.length === 2 &&
+        display.startsWith("-")
+      )
     ) {
       updateDisplay("0");
       return;
@@ -247,6 +295,9 @@ const Calculator = () => {
     updateDisplay(display.slice(0, -1));
   };
 
+  // -----------------------------
+  // Button handler
+  // -----------------------------
   const handleButtonClick = (value: string) => {
     if (/^\d$/.test(value)) {
       inputNumber(value);
@@ -290,10 +341,16 @@ const Calculator = () => {
     }
   };
 
+  // -----------------------------
+  // Clear history
+  // -----------------------------
   const clearHistory = () => {
     setHistory([]);
   };
 
+  // -----------------------------
+  // Keyboard support
+  // -----------------------------
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const { key } = event;
@@ -310,7 +367,12 @@ const Calculator = () => {
         return;
       }
 
-      if (["+", "-", "*", "/"].includes(key)) {
+      if (
+        key === "+" ||
+        key === "-" ||
+        key === "*" ||
+        key === "/"
+      ) {
         event.preventDefault();
         chooseOperator(key as Operator);
         return;
@@ -322,7 +384,10 @@ const Calculator = () => {
         return;
       }
 
-      if (key === "Enter" || key === "=") {
+      if (
+        key === "Enter" ||
+        key === "="
+      ) {
         event.preventDefault();
         performCalculation();
         return;
@@ -340,46 +405,63 @@ const Calculator = () => {
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener(
+      "keydown",
+      handleKeyDown
+    );
 
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener(
+        "keydown",
+        handleKeyDown
+      );
     };
   });
 
   return (
-    <main className="flex min-h-screen w-full items-center justify-center bg-black px-4 py-6 text-white sm:px-6 sm:py-10">
+    <main className="flex min-h-screen w-full items-center justify-center bg-gradient-to-br from-slate-950 via-indigo-950 to-violet-950 px-4 py-6 text-white sm:px-6 sm:py-10">
       <section className="w-full max-w-[420px]">
 
-        <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-4 shadow-2xl shadow-black/60 backdrop-blur-xl sm:p-6">
+        {/* Calculator Card */}
+        <div className="rounded-[2rem] border border-indigo-400/20 bg-slate-950/60 p-4 shadow-2xl shadow-indigo-950/50 backdrop-blur-xl sm:p-6">
 
+          {/* Display */}
           <Display
             value={display}
             expression={expression}
             animated={displayAnimating}
           />
 
+          {/* Buttons */}
           <ButtonGrid
             onButtonClick={handleButtonClick}
           />
 
+          {/* History Button */}
           <div className="mt-4 flex items-center justify-between gap-3">
             <button
               type="button"
-              onClick={() => setShowHistory(!showHistory)}
-              className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs text-neutral-400 transition-all duration-200 hover:bg-white/10 hover:text-white active:scale-95"
+              onClick={() =>
+                setShowHistory(!showHistory)
+              }
+              className="rounded-xl border border-indigo-400/20 bg-indigo-950/60 px-4 py-2 text-xs text-slate-400 transition-all duration-200 hover:bg-indigo-900/70 hover:text-violet-300 active:scale-95"
             >
-              {showHistory ? "Hide History" : "History"}
+              {showHistory
+                ? "Hide History"
+                : "History"}
             </button>
 
-            <p className="text-[11px] text-neutral-600">
+            <p className="text-[11px] text-slate-600">
               Keyboard supported
             </p>
           </div>
 
+          {/* History Panel */}
           {showHistory && (
-            <div className="mt-4 overflow-hidden rounded-2xl border border-white/10 bg-black/40">
-              <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+            <div className="mt-4 overflow-hidden rounded-2xl border border-indigo-400/20 bg-slate-950/70">
+
+              {/* History Header */}
+              <div className="flex items-center justify-between border-b border-indigo-400/10 px-4 py-3">
                 <h2 className="text-sm font-medium text-white">
                   Calculation History
                 </h2>
@@ -388,41 +470,46 @@ const Calculator = () => {
                   <button
                     type="button"
                     onClick={clearHistory}
-                    className="text-xs text-neutral-500 transition-colors hover:text-amber-400"
+                    className="text-xs text-slate-500 transition-colors hover:text-violet-400"
                   >
                     Clear
                   </button>
                 )}
               </div>
 
+              {/* History Content */}
               <div className="max-h-60 overflow-y-auto">
+
                 {history.length === 0 ? (
-                  <p className="px-4 py-6 text-center text-xs text-neutral-600">
+                  <p className="px-4 py-6 text-center text-xs text-slate-600">
                     No calculations yet
                   </p>
                 ) : (
                   history.map((item, index) => (
                     <div
                       key={`${item.expression}-${index}`}
-                      className="border-b border-white/5 px-4 py-3 last:border-b-0"
+                      className="border-b border-indigo-400/10 px-4 py-3 last:border-b-0"
                     >
-                      <p className="text-right text-xs text-neutral-500">
+                      <p className="text-right text-xs text-slate-500">
                         {item.expression}
                       </p>
 
-                      <p className="mt-1 text-right font-mono text-lg text-amber-400">
+                      <p className="mt-1 text-right font-mono text-lg text-violet-300">
                         = {item.result}
                       </p>
                     </div>
                   ))
                 )}
+
               </div>
             </div>
           )}
 
-          <p className="mt-4 text-center text-[11px] text-neutral-600">
+          {/* Keyboard Hint */}
+          <p className="mt-4 text-center text-[11px] text-slate-600">
             Press Esc to clear
           </p>
+
         </div>
       </section>
     </main>
