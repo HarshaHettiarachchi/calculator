@@ -1,1 +1,29 @@
 @import "tailwindcss";
+
+/* ============================= */
+/* Falling Number Animation       */
+/* ============================= */
+
+@keyframes numberRain {
+  0% {
+    transform: translateY(-10vh);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.7;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
+
+  90% {
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: translateY(110vh);
+    opacity: 0;
+  }
+}
